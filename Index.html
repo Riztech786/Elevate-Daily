@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Elevate Daily App Preview</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+        }
+        .text-gradient-message {
+            color: white; /* Changed to white */
+        }
+        .text-gradient-quote {
+            color: white; /* Changed to white */
+        }
+        .fade-in {
+            animation: fadeIn 2s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-gray-900 via-purple-900 to-black p-6 flex flex-col items-center justify-center min-h-screen">
+    <div class="max-w-3xl w-full space-y-10 fade-in">
+        <div class="text-center space-y-4">
+            <h1 class="text-5xl font-extrabold tracking-wide text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400">
+                Elevate Daily
+            </h1>
+            <p class="text-gray-300 text-lg sm:text-xl italic">
+                Your daily boost of positivity & inspiration. Choose a message or quote and feel uplifted.
+            </p>
+        </div>
+
+        <div class="flex flex-col sm:flex-row gap-4 justify-center">
+            <button id="messageButton" class="w-full sm:w-auto bg-gradient-to-r from-blue-500 to-purple-500 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-all duration-300">
+                Daily Message
+            </button>
+            <button id="quoteButton" class="w-full sm:w-auto bg-gradient-to-r from-purple-500 to-pink-500 text-white font-semibold px-6 py-3 rounded-full shadow-lg hover:scale-105 transition-all duration-300">
+                Quote
+            </button>
+        </div>
+
+        <div id="resultCard" class="hidden opacity-0 transform translate-y-20 transition-all duration-500">
+            <div class="bg-white/10 backdrop-blur-lg border border-white/20 shadow-2xl text-center rounded-2xl p-6 space-y-4">
+                <div id="cardContent">
+                    <p id="messageText" class="text-2xl sm:text-3xl font-semibold text-gradient-message text-left whitespace-pre-line"></p>
+                    <p id="quoteAuthor" class="text-gray-300 italic text-center mt-2"></p>
+                </div>
+                <div class="flex justify-center gap-4">
+                    <button id="refreshButton" class="bg-white/20 text-white hover:bg-white/30 rounded-full px-4 py-2">
+                        🔄 Refresh
+                    </button>
+                    <button id="copyButton" class="bg-white/20 text-white hover:bg-white/30 rounded-full px-4 py-2">
+                        📋 Copy
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <footer class="text-center text-gray-400 text-sm pt-12 border-t border-white/10">
+            <p class="pb-1">✨ Spread positivity! Share with friends ✨</p>
+            <p class="text-xs text-gray-500">Creator : Rizwan Farooq</p>
+        </footer>
+    </div>
+
+    <script>
+        const dailyMessages = [
+            "Embrace the present moment; it is the only time you truly have.",
+            "A small act of kindness can make a big difference in someone's day.",
+            "Your perspective shapes your reality. Choose to see the good.",
+            "The best way to predict the future is to create it.",
+            "Every day is a new opportunity to grow and improve.",
+            "Be the reason someone smiles today.",
+            "Believe in your potential; you are capable of amazing things.",
+            "Challenges are opportunities in disguise.",
+            "Gratitude turns what we have into enough.",
+            "Take a deep breath and remember you are resilient.",
+            "The journey of a thousand miles begins with a single step.",
+            "Happiness is not a destination, it's a way of travel.",
+            "Let your light shine brightly for the world to see.",
+            "Focus on progress, not perfection.",
+            "Kindness is a language that the deaf can hear and the blind can see.",
+            "The only limit to our realization of tomorrow will be our doubts of today.",
+            "The power of imagination makes us infinite.",
+            "Strive for progress, not perfection.",
+            "Do what you can, with what you have, where you are.",
+            "The future belongs to those who believe in the beauty of their dreams.",
+            "Make each day your masterpiece.",
+            "The sun shines after every storm. Keep believing.",
+            "Your attitude determines your direction.",
+            "The smallest step in the right direction can lead to the greatest destination.",
+            "Today's struggles are tomorrow's strengths.",
+            "Find joy in the ordinary.",
+            "Let go of what was and embrace what could be.",
+            "The universe is full of magical things, patiently waiting for our wits to grow sharper.",
+            "Be present. Be here. Be now.",
+            "Every moment is a fresh beginning.",
+            "Your thoughts create your world.",
+            "The only constant in life is change. Embrace it.",
+            "Don't be afraid to shine.",
+            "The greatest discovery of all time is that a person can change their future by merely changing their attitude.",
+            "The secret of getting ahead is getting started.",
+            "Believe you can and you're halfway there.",
+            "Success is not final, failure is not fatal: it is the courage to continue that counts.",
+            "Our greatest glory is not in never failing, but in rising up every time we fail.",
+            "It does not matter how slowly you go as long as you do not stop.",
+            "The only way to do great work is to love what you do.",
+            "In three words I can sum up everything I’ve learned about life: it goes on.",
+            "The best is yet to come.",
+            "Live the life you've imagined.",
+            "What lies behind us and what lies before us are tiny matters compared to what lies within us.",
+            "The mind is everything. What you think you become.",
+            "Happiness is an inside job.",
+            "You are stronger than you think.",
+            "Make today amazing.",
+            "The little things are the big things.",
+            "Bloom where you are planted.",
+            "Collect moments, not things.",
+            "Dream bigger and fear less.",
+            "Enjoy the journey, not just the destination.",
+            "Be yourself; everyone else is already taken.",
+            "The best view comes after the hardest climb.",
+            "Kindness never goes out of style.",
+            "Make someone's day a little brighter.",
+            "The power of positivity is immense.",
+            "Start each day with a grateful heart.",
+            "You are enough, just as you are.",
+            "Progress is impossible without change.",
+            "Be the change that you wish to see in the world.",
+            "The only true wisdom is in knowing you know nothing.",
+            "Well done is better than well said.",
+            "Actions speak louder than words.",
+            "Learn from yesterday, live for today, hope for tomorrow.",
+            "The future starts today, not tomorrow.",
+            "Don't watch the clock; do what it does. Keep going.",
+            "Every problem is a gift—without problems we would not grow.",
+            "The art of living lies less in eliminating our troubles than in growing with them.",
+            "Our lives begin to end the day we become silent about things that matter.",
+            "The only person you are destined to become is the person you decide to be.",
+            "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+            "Life is what happens when you're busy making other plans.",
+            "The purpose of our lives is to be happy.",
+            "Get busy living or get busy dying.",
+            "You only live once, but if you do it right, once is enough.",
+            "To be yourself in a world that is constantly trying to make you something else is the greatest accomplishment.",
+            "Be the change that you wish to see in the world.",
+            "If you want to fly, give up everything that weighs you down.",
+            "The best time to plant a tree was 20 years ago. The second best time is now.",
+            "The journey not the arrival matters.",
+            "Where there is love there is life.",
+            "Do not go where the path may lead, go instead where there is no path and leave a trail.",
+            "The happiness of your life depends upon the quality of your thoughts.",
+            "It is never too late to be what you might have been.",
+            "We are what we repeatedly do. Excellence, then, is not an act, but a habit.",
+            "Knowing yourself is the beginning of all wisdom.",
+            "Happiness depends upon ourselves.",
+            "The ultimate value of life depends upon awareness and the power of contemplation rather than upon mere survival.",
+            "Educating the mind without educating the heart is no education at all.",
+            "Pleasure in the job puts perfection in the work.",
+            "Hope is a waking dream.",
+            "The roots of education are bitter, but the fruit is sweet.",
+            "The best and most beautiful things in the world cannot be seen or even touched - they must be felt with the heart.",
+            "Keep your face always toward the sunshine - and shadows will fall behind you.",
+            "Not all those who wander are lost.",
+            "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost.",
+            "The greatest glory in living lies not in never falling, but in rising every time we fall.",
+            "Education is the most powerful weapon which you can use to change the world.",
+            "It always seems impossible until it's done.",
+            "After climbing a great hill, one only finds that there are many more hills to climb.",
+            "For to be free is not merely to cast off one's chains, but to live in a way that respects and enhances the freedom of others.",
+            "Life is what happens when you're busy making other plans.",
+            "Imagine all the people living life in peace. You may say I'm a dreamer, but I'm not the only one. I hope someday you'll join us, and the world will be as one.",
+            "Everything will be okay in the end. If it's not okay, it's not the end.",
+            "Love is all you need.",
+            "When you do something noble and beautiful and nobody noticed, do not be sad. For the sun every morning is a beautiful spectacle and yet most of the audience still sleeps.",
+            "Darkness cannot drive out darkness: only light can do that. Hate cannot drive out hate: only love can do that.",
+            "The time is always right to do what is right.",
+            "Our lives begin to end the day we become silent about things that matter.",
+            "Faith is taking the first step even when you don't see the whole staircase.",
+            "I have decided to stick with love. Hate is too great a burden to bear.",
+        ];
+
+        const quotes = [
+            { text: "The wound is the place where the Light enters you.", author: "Rumi" },
+            { text: "What you seek is seeking you.", author: "Rumi" },
+            { text: "Don't grieve. Anything you lose comes round in another form.", author: "Rumi" },
+            { text: "Yesterday I was clever, so I wanted to change the world. Today I am wise, so I am changing myself.", author: "Rumi" },
+            { text: "Your heart knows the way. Run in that direction.", author: "Rumi" },
+            { text: "Be silent only when you feel you cannot afford to be misunderstood.", author: "Khalil Gibran" },
+            { text: "The truly free man is the one who can turn down a pleasure.", author: "Khalil Gibran" },
+            { text: "Out of suffering have emerged the strongest souls; the most massive characters are seared with scars.", author: "Khalil Gibran" },
+            { text: "Friendship is always a sweet responsibility, never an opportunity.", author: "Khalil Gibran" },
+            { text: "The obvious is that which is never seen until someone expresses it simply.", author: "Khalil Gibran" },
+            { text: "It is the mark of an educated mind to be able to entertain a thought without accepting it.", author: "Aristotle" },
+            { text: "Happiness depends upon ourselves.", author: "Aristotle" },
+            { text: "The ultimate value of life depends upon awareness and the power of contemplation rather than upon mere survival.", author: "Aristotle" },
+            { text: "Knowing yourself is the beginning of all wisdom.", author: "Aristotle" },
+            { text: "Pleasure in the job puts perfection in the work.", author: "Aristotle" },
+            { text: "The only true wisdom is in knowing you know nothing.", author: "Socrates" },
+            { text: "The unexamined life is not worth living.", author: "Socrates" },
+            { text: "Strong minds discuss ideas, weak minds discuss people, small minds discuss events.", author: "Socrates" },
+            { text: "To know is to know that you know nothing. That is the meaning of true knowledge.", author: "Socrates" },
+            { text: "False words are not only evil in themselves, but they infect the soul with evil.", author: "Socrates" },
+            { text: "The mind is everything. What you think you become.", author: "Buddha" },
+            { text: "Peace comes from within. Do not seek it without.", author: "Buddha" },
+            { text: "The root of suffering is attachment.", author: "Buddha" },
+            { text: "Do not dwell in the past, do not dream of the future, concentrate the mind on the present moment.", author: "Buddha" },
+            { text: "What we think, we become.", author: "Buddha" },
+            { text: "Where there is no struggle, there is no strength.", author: "Oprah Winfrey" },
+            { text: "You get in life what you have the courage to ask for.", author: "Oprah Winfrey" },
+            { text: "The biggest adventure you can ever take is to live the life of your dreams.", author: "Oprah Winfrey" },
+            { text: "Turn your wounds into wisdom.", author: "Oprah Winfrey" },
+            { text: "Follow your instincts. That's where true wisdom manifests itself.", author: "Oprah Winfrey" },
+            { text: "Be the change that you wish to see in the world.", author: "Mahatma Gandhi" },
+            { text: "The future depends on what we do in the present.", author: "Mahatma Gandhi" },
+            { text: "Live as if you were to die tomorrow. Learn as if you were to live forever.", author: "Mahatma Gandhi" },
+            { text: "Happiness is when what you think, what you say, and what you do are in harmony.", author: "Mahatma Gandhi" },
+            { text: "Strength does not come from winning. Your struggles develop your strengths.", author: "Mahatma Gandhi" },
+            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+            { text: "Stay hungry. Stay foolish.", author: "Steve Jobs" },
+            { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+            { text: "The ones who are crazy enough to think they can change the world, are the ones who do.", author: "Steve Jobs" },
+            { text: "Let's go invent tomorrow instead of worrying about what happened yesterday.", author: "Steve Jobs" },
+            { text: "The best and most beautiful things in the world cannot be seen or even touched - they must be felt with the heart.", author: "Helen Keller" },
+            { text: "Keep your face always toward the sunshine - and shadows will fall behind you.", author: "Walt Whitman" },
+            { text: "Not all those who wander are lost.", author: "J.R.R. Tolkien" },
+            { text: "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost.", author: "J.R.R. Tolkien" },
+            { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
+            { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+            { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+            { text: "After climbing a great hill, one only finds that there are many more hills to climb.", author: "Nelson Mandela" },
+            { text: "For to be free is not merely to cast off one's chains, but to live in a way that respects and enhances the freedom of others.", author: "Nelson Mandela" },
+            { text: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
+            { text: "Imagine all the people living life in peace. You may say I'm a dreamer, but I'm not the only one. I hope someday you'll join us, and the world will be as one.", author: "John Lennon" },
+            { text: "Everything will be okay in the end. If it's not okay, it's not the end.", author: "John Lennon" },
+            { text: "Love is all you need.", author: "John Lennon" },
+            { text: "When you do something noble and beautiful and nobody noticed, do not be sad. For the sun every morning is a beautiful spectacle and yet most of the audience still sleeps.", author: "John Lennon" },
+            { text: "Darkness cannot drive out darkness: only light can do that. Hate cannot drive out hate: only love can do that.", author: "Martin Luther King Jr." },
+            { text: "The time is always right to do what is right.", author: "Martin Luther King Jr." },
+            { text: "Our lives begin to end the day we become silent about things that matter.", author: "Martin Luther King Jr." },
+            { text: "Faith is taking the first step even when you don't see the whole staircase.", author: "Martin Luther King Jr." },
+            { text: "I have decided to stick with love. Hate is too great a burden to bear.", author: "Martin Luther King Jr." },
+            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+            { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
+            { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+            { text: "The people who are crazy enough to think they can change the world are the ones who do.", author: "Steve Jobs" },
+            { text: "Innovation distinguishes between a leader and a follower.", author: "Steve Jobs" },
+            { text: "The best and most beautiful things in the world cannot be seen or even touched — they must be felt with the heart.", author: "Helen Keller" },
+            { text: "Keep your face always toward the sunshine, and shadows will fall behind you.", author: "Walt Whitman" },
+            { text: "Not all those who wander are lost.", author: "J.R.R. Tolkien" },
+            { text: "All that is gold does not glitter, not all those who wander are lost; the old that is strong does not wither, deep roots are not reached by the frost.", author: "J.R.R. Tolkien" },
+            { text: "The greatest glory in living lies not in never falling, but in rising every time we fall.", author: "Nelson Mandela" },
+            { text: "Education is the most powerful weapon which you can use to change the world.", author: "Nelson Mandela" },
+            { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+            { text: "After climbing a great hill, one only finds that there are many more hills to climb.", author: "Nelson Mandela" },
+             { text: "For to be free is not merely to cast off one's chains, but to live in a way that respects and enhances the freedom of others.", author: "Nelson Mandela" },
+            { text: "Life is what happens when you're busy making other plans.", author: "John Lennon" },
+            { text: "Imagine all the people living life in peace. You may say I'm a dreamer, but I'm not the only one. I hope someday you'll join us, and the world will be as one.", author: "John Lennon" },
+            { text: "Everything will be okay in the end. If it's not okay, it's not the end.", author: "John Lennon" },
+            { text: "Love is all you need.", author: "John Lennon" },
+            { text: "When you do something noble and beautiful and nobody noticed, do not be sad. For the sun every morning is a beautiful spectacle and yet most of the audience still sleeps.", author: "John Lennon" },
+            { text: "The journey of a thousand miles begins with a single step.", author: "Lao Tzu" },
+            { text: "The art of living well and the art of dying well are one.", author: "Epicurus" },
+            { text: "The greatest wealth is to live content with little.", author: "Plato" },
+            { text: "The unexamined life is not worth living.", author: "Socrates" },
+            { text: "To know is to know that you know nothing. That is the meaning of true knowledge.", author: "Socrates" },
+            { text: "The mind is everything. What you think you become.", author: "Buddha" },
+            { text: "Peace comes from within. Do not seek it without.", author: "Buddha" },
+            { text: "The only way to do great work is to love what you do.", author: "Steve Jobs" },
+            { text: "Stay hungry, stay foolish.", author: "Steve Jobs" },
+            { text: "Your time is limited, don't waste it living someone else's life.", author: "Steve Jobs" },
+        ];
+
+        function getRandomItem(array) {
+            return array[Math.floor(Math.random() * array.length)];
+        }
+
+        const messageButton = document.getElementById('messageButton');
+        const quoteButton = document.getElementById('quoteButton');
+        const resultCard = document.getElementById('resultCard');
+        const messageTextElement = document.getElementById('messageText');
+        const quoteAuthorElement = document.getElementById('quoteAuthor');
+        const refreshButton = document.getElementById('refreshButton');
+        const copyButton = document.getElementById('copyButton');
+
+        let currentMessage = '';
+        let currentQuote = '';
+
+        function showResultCard() {
+            resultCard.classList.remove('hidden');
+            resultCard.offsetHeight;
+            resultCard.classList.add('opacity-100', 'translate-y-0');
+        }
+
+        function generateDailyMessage() {
+            currentMessage = getRandomItem(dailyMessages);
+            currentQuote = '';
+            messageTextElement.textContent = currentMessage;
+            quoteAuthorElement.textContent = '';
+            showResultCard();
+        }
+
+        function generateQuote() {
+            const randomQuote = getRandomItem(quotes);
+            currentQuote = randomQuote.text;
+            currentMessage = '';
+            messageTextElement.textContent = currentQuote;
+            quoteAuthorElement.textContent = `- ${randomQuote.author}`;
+            showResultCard();
+        }
+
+        function copyToClipboard(text) {
+            if (!text) {
+                alert('No text to copy!');
+                return;
+            }
+            navigator.clipboard.writeText(text).then(() => {
+                alert('Text copied to clipboard!');
+            }).catch(err => {
+                alert('Failed to copy text.');
+                console.error('Failed to copy: ', err);
+            });
+        }
+
+        messageButton.addEventListener('click', generateDailyMessage);
+        quoteButton.addEventListener('click', generateQuote);
+        refreshButton.addEventListener('click', () => {
+            if (currentMessage) {
+                generateDailyMessage();
+            } else {
+                generateQuote();
+            }
+        });
+        copyButton.addEventListener('click', () => copyToClipboard(currentMessage || currentQuote));
+    </script>
+</body>
+</html>
